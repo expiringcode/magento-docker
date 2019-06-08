@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+
+  php:
+    build: ../images/hhvm
+    tty: true

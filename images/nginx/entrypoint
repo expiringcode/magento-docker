@@ -1,0 +1,10 @@
+set -e
+
+if [ -z "$(ls -A $WORKDIR | grep nginx)" ]; then
+    echo "Creating nginx dir because it doesn't exist"
+    mkdir -p $WORKDIR/nginx/conf
+    cp /etc/nginx/sites-available/core $WORKDIR/nginx/conf/autoroute.conf
+fi
+
+/usr/sbin/nginx -g "daemon on;";
+nginx -t

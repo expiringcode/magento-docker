@@ -1,0 +1,26 @@
+version: '3'
+services:
+  php7:
+    volumes:
+      - '../src/magento:/www'
+    env_file:
+      - ../images/php/php.dev.env
+    logging:
+      driver: json-file
+  mysql:
+    ports:
+      - '$DB_PORT:3306'
+    env_file:
+      - ../images/mysql/db.dev.env
+    logging:
+      driver: json-file
+  nginx:
+    env_file:
+      - ../images/nginx/proxy.dev.env
+    volumes:
+      - '../src/magento:/www'
+    networks:
+      - tier_3
+      - tier_1
+    logging:
+      driver: json-file

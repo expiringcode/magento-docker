@@ -1,0 +1,118 @@
+version: '3'
+services:
+  phplibs:
+    image: '${REGISTRY}/${PROJECT_NAME}/phplibs:${VERSION}'
+    build:
+      context: ../
+      dockerfile: images/php/alpine/phplibs.dockerfile
+    env_file:
+      - ../images/php/php.env
+  php7:
+    image: '${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}'
+    build:
+      context: ../
+      dockerfile: images/php/alpine/Dockerfile
+      args:
+        BASE: ${REGISTRY}/${PROJECT_NAME}/phplibs:${VERSION}
+    restart: always
+    expose:
+      - '9000'
+    volumes:
+      - 'backend_:/www'
+    env_file:
+      - ../images/php/php.env
+    networks:
+      - tier_3
+      - tier_log
+  mysql:
+    image: '${REGISTRY}/${PROJECT_NAME}/mariadb:${VERSION}'
+    build:
+      context: ../
+      dockerfile: images/mysql/Dockerfile
+    volumes:
+      - 'mysql_:/var/lib/mysql'
+    restart: always
+    expose:
+      - '3306'
+    env_file:
+      - ../images/mysql/db.env
+    networks:
+      - tier_3
+      - tier_log
+  nginx:
+    image: '${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}'
+    build:
+      context: ../
+      dockerfile: images/nginx/Dockerfile
+    restart: always
+    env_file:
+      - ../images/nginx/proxy.env
+    volumes:
+      - 'backend_:/www'
+    expose:
+      - '443'
+    networks:
+      - tier_3
+      - tier_log
+      - tier_1
+  
+  # Memcached
+  memcached:
+    image: memcached:alpine
+    networks:
+      - tier_3
+      - tier_log
+  
+  # VARNISH
+  varnish:
+    image: jonbaldie/varnish
+    restart: always
+    expose: 
+      - "80"
+    networks:
+      - tier_3
+      - tier_log
+  
+  # REDIS
+  redis:
+    image: ${REGISTRY}/${PROJECT_NAME}/redis:${VERSION}
+    build: 
+      context: ../
+      dockerfile: images/redis/Dockerfile
+    volumes:
+      - redis_:/data
+    expose: 
+      - "6379"
+    restart: always
+    networks:
+      - tier_3
+      - tier_log
+  
+  # ElasticSearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.3
+    restart: unless-stopped
+    volumes:
+      - elasticsearch_:/usr/share/elasticsearch/data
+    networks:
+      - tier_3
+      - tier_1
+      - tier_log
+
+volumes:
+  node_: null
+  mongo_: null
+  redis_: null
+  mysql_: null
+  cassandra_: null
+  influxdb_: null
+  backend_: null
+  elasticsearch_: null
+networks:
+  tier_2: null
+  tier_3: null
+  tier_0: null
+  tier_1: 
+    external:
+      name: front-tier
+  tier_log: null
