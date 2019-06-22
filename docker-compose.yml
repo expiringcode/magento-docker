@@ -3,7 +3,7 @@ version: '3.5'
 services:
   php7:
     image: '${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}'
-    restart: always
+    restart: unless-stopped
     expose:
       - '9000'
     volumes:
@@ -16,7 +16,7 @@ services:
   
   nginx:
     image: '${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}'
-    restart: always
+    restart: unless-stopped
     env_file:
       - ../images/nginx/proxy.env
     volumes:
