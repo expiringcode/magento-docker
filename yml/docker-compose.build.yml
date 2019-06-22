@@ -1,0 +1,46 @@
+version: '3.5'
+services:
+  phplibs:
+    image: ${REGISTRY}/${PROJECT_NAME}/phplibs:${VERSION}
+    build:
+      context: ../
+      dockerfile: images/php/alpine/phplibs.dockerfile
+  php7:
+    image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
+    build:
+      context: ../
+      dockerfile: images/php/alpine/Dockerfile
+      args:
+        BASE: ${REGISTRY}/${PROJECT_NAME}/phplibs:${VERSION}
+
+  nginxbase:
+    image: ${REGISTRY}/${PROJECT_NAME}/nginxbase:${VERSION}
+    build:
+      context: ../
+      dockerfile: images/nginx/base.dockerfile
+  nginx:
+    image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
+    build:
+      context: ../
+      dockerfile: images/nginx/Dockerfile
+      args:
+        BASE: ${REGISTRY}/${PROJECT_NAME}/nginxbase:${VERSION}
+
+  mysql:
+    image: '${REGISTRY}/${PROJECT_NAME}/mariadb:${VERSION}'
+    build:
+      context: ../
+      dockerfile: images/mysql/Dockerfile
+    volumes:
+      - 'mysql_:/var/lib/mysql'
+    expose:
+      - '3306'
+    env_file:
+      - ../images/mysql/db.env
+  
+  # REDIS
+  redis:
+    image: ${REGISTRY}/${PROJECT_NAME}/redis:${VERSION}
+    build: 
+      context: ../
+      dockerfile: images/redis/Dockerfile
