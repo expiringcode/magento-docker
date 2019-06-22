@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
   php7:
     volumes:
@@ -9,7 +9,7 @@ services:
       driver: json-file
   mysql:
     ports:
-      - '$DB_PORT:3306'
+      - '3306:3306'
     env_file:
       - ../images/mysql/db.dev.env
     logging:
