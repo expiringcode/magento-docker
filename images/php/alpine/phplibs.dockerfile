@@ -4,10 +4,9 @@ RUN set -xe && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
 
-FROM php:7.1-fpm-alpine
+FROM php:7.2-fpm-alpine
 
 ## HEALTHCHECK
-
 RUN apk update && \
     apk add --no-cache \
     fcgi
@@ -20,7 +19,6 @@ HEALTHCHECK --interval=10s --timeout=3s \
     cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1
 
 ## Adding Magento dependencies
-
 RUN apk update && \
     apk add --no-cache \
     git \
@@ -86,10 +84,18 @@ RUN docker-php-ext-enable \
     zip \
     opcache
 
+##  WORKDIR
 ENV WORKDIR /www
+WORKDIR $WORKDIR
+RUN chown -R www-data:www-data $WORKDIR
 
+## Entrypoint | Composer
 COPY --from=composer /usr/local/bin/composer /usr/local/bin/composer
 COPY images/php/alpine/entrypoint /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint
 
+RUN chmod +x /usr/local/bin/entrypoint
+RUN mkdir -p /init
+RUN chown -R www-data:www-data /init
+
+## PHP Conf
 COPY images/php/alpine/conf/* /usr/local/etc/php/conf.d/

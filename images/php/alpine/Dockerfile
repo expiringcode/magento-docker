@@ -1,13 +1,11 @@
 ARG BASE
 FROM ${BASE}
 
-WORKDIR $WORKDIR
+USER www-data
 
-RUN chown -R www-data:www-data $WORKDIR
+COPY ./src/magento /init
 
-USER root
-
-COPY ./src/magento .
-
+## Commands
 ENTRYPOINT ["entrypoint"]
 CMD ["php-fpm"]
+
