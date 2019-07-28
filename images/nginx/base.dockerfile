@@ -1,6 +1,7 @@
 FROM alpine as ssl
 
 ARG OPENSSL_SUBJ="/C=IT/ST=Parma/L=Parma/O=Caffeina/OU=IT Department/CN=caffeina.com"
+ENV OPENSSL_SUBJ=${OPENSSL_SUBJ}
 
 ## Adding self-signed SSL for localhost https
 RUN apk update && apk add openssl && \
@@ -8,7 +9,7 @@ RUN apk update && apk add openssl && \
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 	-keyout /etc/nginx/cert/nginx.key \
 	-out /etc/nginx/cert/nginx.crt \
-	-subj ${OPENSSL_SUBJ} && \
+	-subj "${OPENSSL_SUBJ}" && \
 	openssl dhparam 2048 -out /etc/nginx/cert/dhparam.pem
 
 FROM nginx:alpine
