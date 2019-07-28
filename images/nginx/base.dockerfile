@@ -34,9 +34,7 @@ COPY images/nginx/entrypoint /usr/bin
 COPY images/nginx/docker-healthcheck /usr/local/bin
 
 RUN chmod +x /usr/bin/entrypoint \
-	&& chmod +x /usr/local/bin/docker-healthcheck \
-	&& mkdir -p $WORKDIR/nginx \
-	&& rm -Rf /etc/nginx
+	&& chmod +x /usr/local/bin/docker-healthcheck
 
 HEALTHCHECK --interval=10s --timeout=3s \
 	CMD ["docker-healthcheck"]
