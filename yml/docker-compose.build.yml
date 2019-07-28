@@ -5,7 +5,7 @@ services:
     image: ${REGISTRY}/${PROJECT_NAME}/phplibs:${VERSION}
     build:
       context: ../
-      dockerfile: images/php/alpine/phplibs.dockerfile
+      dockerfile: images/php/alpine/phplibs.Dockerfile
   php7:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     build:
@@ -20,7 +20,7 @@ services:
     image: ${REGISTRY}/${PROJECT_NAME}/nginxbase:${VERSION}
     build:
       context: ../
-      dockerfile: images/nginx/base.dockerfile
+      dockerfile: images/nginx/base.Dockerfile
   nginx:
     image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
     depends_on: 
