@@ -1,12 +1,15 @@
 ARG BASE
 ARG ENVIRONMENT
 
-FROM php:7.2-alpine as composer
+## Installing dependencies
+FROM ${BASE} as composer
 
-COPY ./src/magento/package.json /init/package.json
+COPY ./src/magento/composer.json /init/composer.json
 
-RUN composer install -o
+# RUN composer install --no-scripts --no-autoloader --no-progress --no-suggest --no-dev -d /init
+RUN composer create-project --repository=https://repo.magento.com/ magento/project-community-edition /init
 
+## Real container
 FROM ${BASE}
 
 ENV ENVIRONMENT=${ENVIRONMENT}
@@ -15,6 +18,8 @@ USER www-data
 
 COPY --from=composer /init /init
 COPY ./src/magento /init
+
+RUN composer dump-autoload --optimize -d /init
 
 ## Commands
 ENTRYPOINT ["entrypoint"]
