@@ -23,6 +23,8 @@ services:
       dockerfile: images/nginx/base.dockerfile
   nginx:
     image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
+    depends_on: 
+      - nginxbase
     build:
       context: ../
       dockerfile: images/nginx/Dockerfile
@@ -35,6 +37,8 @@ services:
     build:
       context: ../
       dockerfile: images/mysql/Dockerfile
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}
   
   ## REDIS
   redis:
