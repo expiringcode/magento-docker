@@ -6,6 +6,7 @@ services:
     build:
       context: ../
       dockerfile: images/php/alpine/phplibs.Dockerfile
+    command: "echo built"
   php7:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     depends_on: 
@@ -23,6 +24,7 @@ services:
     build:
       context: ../
       dockerfile: images/nginx/base.Dockerfile
+    command: "echo built"
   nginx:
     image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
     depends_on: 
@@ -33,6 +35,7 @@ services:
       args:
         BASE: ${REGISTRY}/${PROJECT_NAME}/nginxbase:${VERSION}
         ENVIRONMENT: ${ENVIRONMENT}
+
   ## MySQL
   mysql:
     image: '${REGISTRY}/${PROJECT_NAME}/mariadb:${VERSION}'
