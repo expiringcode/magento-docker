@@ -5,10 +5,10 @@ set -ex
 ## For production, app must be copied to /init
 if [ ! -z "$(ls -A /. | grep init)" -a "$ENVIRONMENT" != "development" ]; then
 	if [ ! -z "$(ls -A $WORKDIR/)" ]; then
-		rm -rf $WORKDIR/*
+		rm -f $WORKDIR/*
 	fi
 
-	mv -r /init/* $WORKDIR/
+	mv /init/* $WORKDIR/
 	rm -rf /init
 fi
 
