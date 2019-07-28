@@ -8,6 +8,8 @@ services:
       dockerfile: images/php/alpine/phplibs.Dockerfile
   php7:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
+    depends_on: 
+      - phplibs
     build:
       context: ../
       dockerfile: images/php/alpine/Dockerfile
