@@ -6,9 +6,9 @@ services:
     env_file: 
       - ../config/${ENVIRONMENT}/php.env
     volumes:
-      - name: 'backend_:/www'
+      - backend_:/www
     networks:
-      - tier_3
+      - tier_2
       - tier_log
 
   nginx:
@@ -17,7 +17,7 @@ services:
     env_file: 
       - ../config/${ENVIRONMENT}/nginx.env
     volumes:
-      - name: 'backend_:/www'
+      - backend_:/www
     networks:
       - tier_2
       - tier_1
