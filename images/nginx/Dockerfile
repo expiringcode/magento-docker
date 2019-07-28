@@ -6,4 +6,4 @@ ENV ENVIRONMENT=${ENVIRONMENT}
 
 COPY ./config/${ENVIRONMENT}/vhost.conf /etc/nginx/sites-enabled/vhost.conf
 
-ENTRYPOINT entrypoint
+# ENTRYPOINT entrypoint
