@@ -13,8 +13,5 @@ services:
   nginx:
     volumes:
       - '../src/magento:/www'
-    networks:
-      - tier_3
-      - tier_1
     logging:
       driver: json-file
