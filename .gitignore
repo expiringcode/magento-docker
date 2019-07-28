@@ -1,4 +1,4 @@
 .DS_Store
 .env
-src/www/magento
-src/www/media
+src/magento
+src/media
