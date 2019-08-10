@@ -17,6 +17,8 @@ services:
       args:
         BASE: ${REGISTRY}/${PROJECT_NAME}/phplibs:${VERSION}
         ENVIRONMENT: ${ENVIRONMENT}
+        MAGENTO_PUBLIC_KEY: ${MAGENTO_PUBLIC_KEY}
+        MAGENTO_PRIVATE_KEY: ${MAGENTO_PRIVATE_KEY}
 
   ## NGINX
   nginxbase:
