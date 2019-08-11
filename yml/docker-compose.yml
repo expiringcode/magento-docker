@@ -12,7 +12,7 @@ services:
     networks:
       - tier_2
       - tier_log
-  magento-startup:
+  startup:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     env_file:
       - ../config/${ENVIRONMENT}/php.env
@@ -23,12 +23,11 @@ services:
       - php7
       - mysql
       - redis
-      - memcached
       - elasticsearch
     networks:
       - tier_2
       - tier_log
-  magento-cron:
+  cron:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     env_file:
       - ../config/${ENVIRONMENT}/php.env
@@ -38,7 +37,7 @@ services:
     restart: always
     depends_on:
       - php7
-      - magento-startup
+      - startup
     networks:
       - tier_2
       - tier_log
