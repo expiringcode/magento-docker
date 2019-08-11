@@ -41,6 +41,9 @@ $WORKDIR/bin/magento setup:config:set \
 ## Magento elasticsearch enable
 
 ## Enabling Varnish
+$WORKDIR/bin/magento setup:config:set \
+  --http-cache-hosts=${VARNISH_HOST}
+
 $WORKDIR/bin/magento config:set \
   --scope=default \
   --scope-code=0 \
