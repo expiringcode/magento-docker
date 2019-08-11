@@ -1,15 +1,21 @@
 #!/bin/sh
 set -ex
 
-## This can't be done with user www-data and is obsolete regardless
-## For production, app must be copied to /init
-if [ ! -z "$(ls -A /. | grep init)" -a "$ENVIRONMENT" != "development" ]; then
-	if [ ! -z "$(ls -A $WORKDIR/)" ]; then
-		rm -f $WORKDIR/*
-	fi
 
-	mv /init/* $WORKDIR/
-	rm -rf /init
+## If we are in development and workdir is not empty
+## don't overwrite it with plain magento code from init
+## thus delete init
+if [ "$ENVIRONMENT" == "development" -a $(ls -A $WORKDIR | wc -l) -gt 1 ];
+then
+  rm -rf /init
+fi
+
+## If init is not empty, then we are in Production and should
+## update our source code in workdir
+if [ ! -z "$(ls -A /. | grep init)" ];
+then
+  mv /init/* $WORKDIR/
+  rm -rf /init
 fi
 
 docker-php-entrypoint "$@"
