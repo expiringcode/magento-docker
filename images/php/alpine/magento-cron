@@ -1,6 +1,8 @@
 #!/bin/sh
 set -ex
 
+rm -f /init
+
 ## Installing Magento cronjob
 php $WORKDIR/magento/bin/magento cron:install --force
 

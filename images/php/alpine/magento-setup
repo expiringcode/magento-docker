@@ -1,6 +1,8 @@
 #!/bin/sh
 set -ex
 
+rm -f /init
+
 ## Magento install config
 php $WORKDIR/magento/bin/magento \
   setup:install \
