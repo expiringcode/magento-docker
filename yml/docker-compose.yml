@@ -1,28 +1,47 @@
 version: '3.5'
 services:
+
+  ## Magento
   php7:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     restart: always
-    env_file: 
+    env_file:
       - ../config/${ENVIRONMENT}/php.env
     volumes:
       - backend_:/www
     networks:
       - tier_2
       - tier_log
+  magento-startup:
+    image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
+    env_file:
+      - ../config/${ENVIRONMENT}/php.env
+    volumes:
+      - backend_:/www
+    entrypoint: "magento-setup"
+    depends_on:
+      - php7
+      - mysql
+      - redis
+      - memcached
+      - elasticsearch
+    networks:
+      - tier_2
+      - tier_log
 
+  ## Nginx
   nginx:
     image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
     restart: always
-    env_file: 
+    env_file:
       - ../config/${ENVIRONMENT}/nginx.env
     volumes:
       - backend_:/www
     networks:
       - tier_2
-      - tier_1
       - tier_log
 
+  ## MySQL
   mysql:
     image: '${REGISTRY}/${PROJECT_NAME}/mariadb:${VERSION}'
     restart: always
@@ -33,23 +52,26 @@ services:
     networks:
       - tier_2
       - tier_log
-  
+
   # Memcached
   memcached:
     image: memcached:alpine
     networks:
       - tier_2
       - tier_log
-  
+
   # VARNISH
   varnish:
-    image: jonbaldie/varnish
+    image: ${REGISTRY}/${PROJECT_NAME}/varnish:${VERSION}
     restart: always
+    env_file:
+      - ../config/${ENVIRONMENT}/varnish.env
+    # tmpfs: /usr/local/var/varnish:exec
     networks:
       - tier_2
       - tier_1
       - tier_log
-  
+
   # REDIS
   redis:
     image: ${REGISTRY}/${PROJECT_NAME}/redis:${VERSION}
@@ -59,7 +81,7 @@ services:
     networks:
       - tier_2
       - tier_log
-  
+
   # ElasticSearch
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.3
@@ -80,11 +102,11 @@ networks:
   # Internet
   tier_0: null
   # Load balancer
-  tier_1: 
+  tier_1:
     external:
       name: front-tier
   # Internal network
-  tier_2: 
+  tier_2:
     internal: true
   # Dedicated to logging
-  tier_log: null 
+  tier_log: null

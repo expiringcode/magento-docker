@@ -9,7 +9,7 @@ services:
     command: "echo built"
   php7:
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
-    depends_on: 
+    depends_on:
       - phplibs
     build:
       context: ../
@@ -29,7 +29,7 @@ services:
     command: "echo built"
   nginx:
     image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
-    depends_on: 
+    depends_on:
       - nginxbase
     build:
       context: ../
@@ -46,10 +46,19 @@ services:
       dockerfile: images/mysql/Dockerfile
       args:
         ENVIRONMENT: ${ENVIRONMENT}
-  
+
   ## REDIS
   redis:
     image: ${REGISTRY}/${PROJECT_NAME}/redis:${VERSION}
-    build: 
+    build:
       context: ../
       dockerfile: images/redis/Dockerfile
+
+  ## Varnish
+  varnish:
+    image: ${REGISTRY}/${PROJECT_NAME}/varnish:${VERSION}
+    build:
+      context: ../
+      dockerfile: images/varnish/Dockerfile
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}

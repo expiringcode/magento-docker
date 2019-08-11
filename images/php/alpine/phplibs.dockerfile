@@ -38,7 +38,7 @@ RUN apk update && \
     libjpeg \
     libjpeg-turbo \
     libjpeg-turbo-dev \
-    libmemcached-libs 
+    libmemcached-libs
 
 RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
     && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
@@ -92,8 +92,10 @@ RUN chown -R www-data:www-data $WORKDIR
 ## Entrypoint | Composer
 COPY --from=composer /usr/local/bin/composer /usr/local/bin/composer
 COPY images/php/alpine/entrypoint /usr/local/bin/
+COPY images/php/alpine/install /usr/local/bin/magento-setup
 
 RUN chmod +x /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/magento-setup
 RUN mkdir -p /init
 RUN chown -R www-data:www-data /init
 
