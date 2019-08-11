@@ -1,0 +1,45 @@
+#!/bin/sh
+set -ex
+
+## Magento install config
+$WORKDIR/bin/magento setup:install \
+  --base-url=${VIRTUAL_PROTO}://${VIRTUAL_HOST}/magento2ee \
+  --db-host=${VIRTUAL_HOST} \
+  --db-name=${MYSQL_DATABASE} \
+  --db-user=${MYSQL_USER} \
+  --db-password=${MYSQL_PASSWORD} \
+  --backend-frontname=${BACKEND_FRONTNAME} \
+  --admin-firstname=${ADMIN_FIRSTNAME} \
+  --admin-lastname=${ADMIN_LASTNAME} \
+  --admin-email=${ADMIN_EMAIL} \
+  --admin-user=${ADMIN_USERNAME} \
+  --admin-password=${ADMIN_PASSWORD} \
+  --language=${LANGUAGE} \
+  --currency=${CURRENCY} \
+  --timezone=${TIMEZONE} \
+  --use-rewrites=${REWRITES_ENABLED}
+
+## Magento redis enable as session manager
+$WORKDIR/bin/magento setup:config:set
+  --session-save=redis \
+  --session-save-redis-host=redis \
+  --session-save-redis-log-level=3 \
+  --session-save-redis-db=2
+
+## Magento redis as default caching
+$WORKDIR/bin/magento setup:config:set \
+  --cache-backend=redis \
+  --cache-backend-redis-server=redis \
+  --cache-backend-redis-db=0
+
+## Magento redis full page cache
+$WORKDIR/bin/magento setup:config:set \
+  --page-cache=redis \
+  --page-cache-redis-server=redis \
+  --page-cache-redis-db=1
+
+## Magento memcache enable (currently using redis for session cache)
+
+## Magento elasticsearch enable
+
+exit 0
