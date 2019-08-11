@@ -92,10 +92,12 @@ RUN chown -R www-data:www-data $WORKDIR
 ## Entrypoint | Composer
 COPY --from=composer /usr/local/bin/composer /usr/local/bin/composer
 COPY images/php/alpine/entrypoint /usr/local/bin/
-COPY images/php/alpine/install /usr/local/bin/magento-setup
+COPY images/php/alpine/magento-setup /usr/local/bin/magento-setup
+COPY images/php/alpine/magento-cron /usr/local/bin/magento-cron
 
 RUN chmod +x /usr/local/bin/entrypoint
 RUN chmod +x /usr/local/bin/magento-setup
+RUN chmod +x /usr/local/bin/magento-cron
 RUN mkdir -p /init
 RUN chown -R www-data:www-data /init
 
