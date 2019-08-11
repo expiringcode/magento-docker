@@ -28,6 +28,20 @@ services:
     networks:
       - tier_2
       - tier_log
+  magento-cron:
+    image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
+    env_file:
+      - ../config/${ENVIRONMENT}/php.env
+    volumes:
+      - backend_:/www
+    entrypoint: "magento-cron"
+    restart: always
+    depends_on:
+      - php7
+      - magento-startup
+    networks:
+      - tier_2
+      - tier_log
 
   ## Nginx
   nginx:
@@ -49,13 +63,6 @@ services:
       - ../config/${ENVIRONMENT}/mysql.env
     volumes:
       - 'mysql_:/var/lib/mysql'
-    networks:
-      - tier_2
-      - tier_log
-
-  # Memcached
-  memcached:
-    image: memcached:alpine
     networks:
       - tier_2
       - tier_log
