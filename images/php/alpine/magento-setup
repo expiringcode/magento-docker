@@ -1,7 +1,10 @@
 #!/bin/sh
 set -ex
 
-rm -f /init
+if [ ! -z "$(ls -A /. | grep init)" ];
+then
+  rm -rf /init/*
+fi
 
 ## Magento install config
 php $WORKDIR/magento/bin/magento \

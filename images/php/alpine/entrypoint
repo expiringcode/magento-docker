@@ -7,7 +7,10 @@ set -ex
 ## thus delete init
 if [ "$ENVIRONMENT" == "development" -a $(ls -A $WORKDIR | wc -l) -gt 1 ];
 then
-  rm -rf /init
+  if [ ! -z "$(ls -A /. | grep init)" ];
+  then
+    rm -rf /init/*
+  fi
 fi
 
 ## If init is not empty, then we are in Production and should
@@ -15,7 +18,7 @@ fi
 if [ ! -z "$(ls -A /. | grep init)" ];
 then
   mv /init/* $WORKDIR/
-  rm -rf /init
+  rm -rf /init/*
 fi
 
 docker-php-entrypoint "$@"
