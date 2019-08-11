@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ex
 
-## This can't be done with user www-data and is obsolete regardless 
+## This can't be done with user www-data and is obsolete regardless
 ## For production, app must be copied to /init
 if [ ! -z "$(ls -A /. | grep init)" -a "$ENVIRONMENT" != "development" ]; then
 	if [ ! -z "$(ls -A $WORKDIR/)" ]; then
@@ -11,28 +11,5 @@ if [ ! -z "$(ls -A /. | grep init)" -a "$ENVIRONMENT" != "development" ]; then
 	mv /init/* $WORKDIR/
 	rm -rf /init
 fi
-
-## Magento install config
-# $WORKDIR/bin/magento setup:install \
-#     --base-url=https://localhost/magento2ee \
-#     --db-host=localhost \
-#     --db-name=magento \
-#     --db-user=magento \
-#     --db-password=magento \
-#     --backend-frontname=admin \
-#     --admin-firstname=admin \
-#     --admin-lastname=admin \
-#     --admin-email=admin@admin.com \
-#     --admin-user=admin \
-#     --admin-password=admin123 \
-#     --language=en_US \
-#     --currency=USD \
-#     --timezone=America/Chicago \
-#     --use-rewrites=1
-
-
-## Magento redis enable
-## Magento memcache enable
-## Magento elasticsearch enable
 
 docker-php-entrypoint "$@"
