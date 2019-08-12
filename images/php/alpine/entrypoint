@@ -15,7 +15,7 @@ fi
 
 ## If init is not empty, then we are in Production and should
 ## update our source code in workdir
-if [ ! -z "$(ls -A /. | grep init)" ];
+if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
 then
   mv /init/* $WORKDIR/
   rm -rf /init/*
