@@ -51,8 +51,10 @@ services:
     volumes:
       - backend_:/www
     networks:
-      - tier_2
-      - tier_log
+      tier_2:
+        aliases:
+          - backend.endpoint.internal
+      tier_log:
 
   ## MySQL
   mysql:
