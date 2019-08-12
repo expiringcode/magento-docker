@@ -3,15 +3,15 @@ services:
   php7:
     volumes:
       - '../src/magento:/www'
-    logging:
-      driver: json-file
+  startup:
+    volumes:
+      - '../src/magento:/www'
+  cron:
+    volumes:
+      - '../src/magento:/www'
   mysql:
     ports:
-      - '3306:3306'
-    logging:
-      driver: json-file
+      - '3336:3306'
   nginx:
     volumes:
       - '../src/magento:/www'
-    logging:
-      driver: json-file
