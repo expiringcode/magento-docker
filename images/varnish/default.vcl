@@ -1,7 +1,7 @@
 vcl 4.0;
 
 backend default {
-  .host = "nginx";
+  .host = "backend.endpoint.internal";
   .port = "80";
   .first_byte_timeout = 600s;
   .probe = {
@@ -11,8 +11,4 @@ backend default {
     .window = 10;
     .threshold = 5;
   }
-}
-
-acl purge {
-  "localhost";
 }
