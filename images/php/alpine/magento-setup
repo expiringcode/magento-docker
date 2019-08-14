@@ -1,8 +1,22 @@
 #!/bin/sh
 set -ex
 
-if [ ! -z "$(ls -A /. | grep init)" ];
+## If we are in development and workdir is not empty
+## don't overwrite it with plain magento code from init
+## thus delete init
+if [ "$ENVIRONMENT" == "development" -a $(ls -A $WORKDIR | wc -l) -gt 1 ];
 then
+  if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
+  then
+    rm -rf /init/*
+  fi
+fi
+
+## If init is not empty, then we are in Production and should
+## update our source code in workdir
+if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
+then
+  mv /init/* $WORKDIR/
   rm -rf /init/*
 fi
 
