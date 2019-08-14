@@ -1,11 +1,6 @@
 #!/bin/sh
 set -ex
 
-if [ ! -z "$(ls -A /. | grep init)" ];
-then
-  rm -rf /init/*
-fi
-
 ## Installing Magento cronjob
 php $WORKDIR/magento/bin/magento cron:install --force
 
