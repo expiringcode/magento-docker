@@ -8,7 +8,7 @@ if [ "$ENVIRONMENT" == "development" -a $(ls -A $WORKDIR | wc -l) -gt 1 ];
 then
   if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
   then
-    rm -rf /init/*
+    rm -rf $(ls -A /init)
   fi
 fi
 
@@ -16,8 +16,10 @@ fi
 ## update our source code in workdir
 if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
 then
-  mv /init/* $WORKDIR/
-  rm -rf /init/*
+  cd /init
+  mv $(ls -A /init) $WORKDIR
+  rm -rf $(ls -A /init)
+  cd $WORKDIR
 fi
 
 ## Magento install config
