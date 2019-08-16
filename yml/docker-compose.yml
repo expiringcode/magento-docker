@@ -2,7 +2,7 @@ version: '3.5'
 services:
 
   ## Magento
-  php7:
+  php7: # Main container
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     restart: always
     env_file:
@@ -12,7 +12,7 @@ services:
     networks:
       - tier_2
       - tier_log
-  startup:
+  startup: # Init container
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     env_file:
       - ../config/${ENVIRONMENT}/php.env
@@ -27,7 +27,7 @@ services:
     networks:
       - tier_2
       - tier_log
-  cron:
+  cron: # Sidecar container
     image: ${REGISTRY}/${PROJECT_NAME}/php7:${VERSION}
     env_file:
       - ../config/${ENVIRONMENT}/php.env
@@ -43,7 +43,7 @@ services:
       - tier_log
 
   ## Nginx
-  nginx:
+  nginx: # Sidecar container
     image: ${REGISTRY}/${PROJECT_NAME}/nginx:${VERSION}
     restart: always
     env_file:
@@ -57,7 +57,7 @@ services:
       tier_log:
 
   ## MySQL
-  mysql:
+  mysql: # Deployment
     image: '${REGISTRY}/${PROJECT_NAME}/mariadb:${VERSION}'
     restart: always
     env_file:
@@ -69,7 +69,7 @@ services:
       - tier_log
 
   # VARNISH
-  varnish:
+  varnish: # Deployment
     image: ${REGISTRY}/${PROJECT_NAME}/varnish:${VERSION}
     restart: always
     env_file:
@@ -81,7 +81,7 @@ services:
       - tier_log
 
   # REDIS
-  redis:
+  redis: # Deployment
     image: ${REGISTRY}/${PROJECT_NAME}/redis:${VERSION}
     volumes:
       - redis_:/data
@@ -91,7 +91,7 @@ services:
       - tier_log
 
   # ElasticSearch
-  elasticsearch:
+  elasticsearch: # Deployment
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.3
     restart: always
     volumes:
