@@ -22,11 +22,16 @@ then
   cd $WORKDIR
 fi
 
+## Composer generate autoload files
+## These ones needs auth.json
+# composer u --no-cache
+composer -o dump-autoload # doesn't need auth
+
 ## Magento install config
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   setup:install \
   --base-url=${VIRTUAL_PROTO}://${VIRTUAL_HOST}/magento2ee \
-  --db-host=${VIRTUAL_HOST} \
+  --db-host=${MYSQL_HOST} \
   --db-name=${MYSQL_DATABASE} \
   --db-user=${MYSQL_USER} \
   --db-password=${MYSQL_PASSWORD} \
@@ -42,7 +47,7 @@ php $WORKDIR/magento/bin/magento \
   --use-rewrites=${REWRITES_ENABLED}
 
 ## Magento redis enable as session manager
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   setup:config:set
   --session-save=redis \
   --session-save-redis-host=${REDIS_HOST} \
@@ -50,32 +55,32 @@ php $WORKDIR/magento/bin/magento \
   --session-save-redis-db=2
 
 ## Magento redis as default caching
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   setup:config:set \
   --cache-backend=redis \
   --cache-backend-redis-server=${REDIS_HOST} \
   --cache-backend-redis-db=0
 
 ## Magento redis full page cache
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   setup:config:set \
   --page-cache=redis \
   --page-cache-redis-server=${REDIS_HOST} \
   --page-cache-redis-db=1
 
 ## Enabling Varnish
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   setup:config:set \
   --http-cache-hosts=${VARNISH_HOST}
 
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   config:set \
   --scope=default \
   --scope-code=0 \
   system/full_page_cache/caching_application 2
 
 ## Setting Magento mode
-php $WORKDIR/magento/bin/magento \
+php $WORKDIR/bin/magento \
   deploy:mode:set \
   ${MAGENTO_MODE}
 
