@@ -19,6 +19,7 @@ services:
         ENVIRONMENT: ${ENVIRONMENT}
         MAGENTO_PUBLIC_KEY: ${MAGENTO_PUBLIC_KEY}
         MAGENTO_PRIVATE_KEY: ${MAGENTO_PRIVATE_KEY}
+        NODEV: ${NODEV}
 
   ## NGINX
   nginxbase:
