@@ -7,8 +7,7 @@ RUN set -xe && curl -sS https://getcomposer.org/installer | php \
 FROM php:7.2-fpm-alpine
 
 ## HEALTHCHECK
-RUN apk update && \
-  apk add --no-cache \
+RUN apk add --update --no-cache \
   fcgi
 
 HEALTHCHECK --interval=10s --timeout=3s \
@@ -19,9 +18,9 @@ HEALTHCHECK --interval=10s --timeout=3s \
   cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1
 
 ## Adding Magento dependencies
-RUN apk update && \
-  apk add --no-cache \
+RUN apk add --update --no-cache \
   git \
+  busybox-suid \
   imagemagick \
   libxml2-dev \
   icu \
