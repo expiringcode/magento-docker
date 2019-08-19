@@ -103,8 +103,13 @@ At this point the containers `php` and `nginx` have both the fully functional co
 ## TODO
 
 [ ] Configure nginx
+
 [x] What happens if magento-setup is run twice
+
 [ ] Configure gitlab-ci and possibly other CI/CD tools
+
 [ ] Convert docker-compose to Kubernetes
+
 [ ] Work on making setup faster
+
 [ ] Finish Docker-Machine section
