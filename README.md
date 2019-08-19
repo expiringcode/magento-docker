@@ -1,7 +1,7 @@
 # magento-docker
 A docker-compose setup of Magento.
 
-## Description
+## Description
 
 This is supposed to be a stack of all the services needed to use Magento at it's full potential making use of all the cache layers suggested by the documentation.
 
