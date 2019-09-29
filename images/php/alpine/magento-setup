@@ -1,25 +1,19 @@
 #!/bin/sh
 set -ex
 
-## If we are in development and workdir is not empty
-## don't overwrite it with plain magento code from init
-## thus delete init
-if [ "$ENVIRONMENT" == "development" -a $(ls -A $WORKDIR | wc -l) -gt 1 ];
-then
-  if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
-  then
-    rm -rf $(ls -A /init)
-  fi
-fi
+## This can't be done with user www-data and is obsolete regardless
+## For production, app must be copied to /root/init
+if [ ! -z "$(ls -A /. | grep init)" ]; then
 
-## If init is not empty, then we are in Production and should
-## update our source code in workdir
-if [ ! -z "$(ls -A /. | grep init)" -a $(ls -A /init | wc -l) -gt 1 ];
-then
-  cd /init
-  mv $(ls -A /init) $WORKDIR
-  rm -rf $(ls -A /init)
-  cd $WORKDIR
+  ## Using the condition with `-a` will evaluate it and throw an error
+  ## Although the first condition fails. This way it won't throw errors
+  if [ "$(ls -A /init | wc -l)" -gt 0 ]; then
+    echo "Updating code into volume"
+
+    cp -ru /init/* ${WORKDIR}/
+    rm -rf /init/*
+  fi
+
 fi
 
 ## Composer generate autoload files
