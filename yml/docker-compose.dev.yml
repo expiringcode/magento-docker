@@ -15,3 +15,5 @@ services:
   nginx:
     volumes:
       - '../src/magento:/www'
+    ports:
+      - '8080:80'
