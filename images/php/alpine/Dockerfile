@@ -4,6 +4,8 @@ FROM ${BASE} as composer
 
 ARG MAGENTO_PUBLIC_KEY
 ARG MAGENTO_PRIVATE_KEY
+ENV COMPOSER_VENDOR_DIR=/vendor
+# ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN composer config -g \
   http-basic.repo.magento.com \
@@ -22,10 +24,12 @@ FROM ${BASE}
 
 ARG ENVIRONMENT
 ENV ENVIRONMENT=${ENVIRONMENT}
+ENV COMPOSER_VENDOR_DIR=/vendor
 
 USER www-data
 
 COPY --chown=www-data:www-data --from=composer /init /init
+COPY --chown=www-data:www-data --from=composer ${COMPOSER_VENDOR_DIR} ${COMPOSER_VENDOR_DIR}
 COPY --chown=www-data:www-data --from=composer /root/.composer/auth.json ./auth.json
 
 RUN cd /init && composer install --no-cache ${NODEV}
