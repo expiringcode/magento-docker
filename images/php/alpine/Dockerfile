@@ -32,7 +32,7 @@ COPY --chown=www-data:www-data --from=composer /init /init
 COPY --chown=www-data:www-data --from=composer ${COMPOSER_VENDOR_DIR} ${COMPOSER_VENDOR_DIR}
 COPY --chown=www-data:www-data --from=composer /root/.composer/auth.json ./auth.json
 
-RUN cd /init && composer install --no-cache ${NODEV}
+# RUN cd /init && composer install --no-cache ${NODEV}
 
 COPY --chown=www-data:www-data ./src/magento /init
 RUN rm -rf ./auth.json
