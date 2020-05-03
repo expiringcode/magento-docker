@@ -1,7 +1,0 @@
-#!/bin/sh
-set -ex
-
-## Installing Magento cronjob
-php $WORKDIR/bin/magento cron:install --force
-
-docker-php-entrypoint "$@"

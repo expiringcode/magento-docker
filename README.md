@@ -1,115 +1,73 @@
-# magento-docker
-A docker-compose setup of Magento.
+# Magento 2.X 🛍
 
-## Description
+The project aims to be production ready and provides all the services needed for a Magento deployment. These services are also configured automatically so once they are up and running it will be working out of the box.
 
-This is supposed to be a stack of all the services needed to use Magento at it's full potential making use of all the cache layers suggested by the documentation.
+## Services
 
-Recently I had the need to work on Magento and I didn't find any setup that was complete enough. So after closing the feature I needed to develop, I decided to create this system that was helpful both in development and production environments. Also it is intended to give an idea on what are the different components that should be used to make Magento as fast as possible.
+This setup is based on docker and includes the following services:
 
-I've tried to put it all together and make it as simple and as ready for production use as possible following the best practices of Docker.
+- mysql
+- elasticsearch
+- redis
+- php: 3 replicas with 3 different functions
+  - php-fpm
+  - magento cron
+  - setup container, dies after setup
+- nginx
+- varnish
+
+Only Varnish is exposed.
 
 ## Requirements
 
-The solution puts together the following technologies
-
 - Docker
-- Docker-compose
+- Reverse proxy
 
-- php
-- mysql
-- nginx
-- redis
-- varnish
-- elasticsearch
+-
 
-You should have basic understanding of the first two as the project relies heavily on the two technologies.
+The reverse proxy is used to handle multiple projects at the same time on the same computer or server. In case of a development environment you can spin up multiple projects and access them through a domain name instead of a port.
 
-### Software LB
+To avoid this, map port 80 on Varnish container with the host.
 
-For local development or if deploying using Docker-Machine, check out [this repo](https://github.com/blimpair/loadbalancer) which simplifies Load Balancing and works perfectly in a local environment along with [GasMask](https://github.com/2ndalpha/gasmask)
+I'm using [blimpair/loadbalancer](https://github.com/blimpair/loadbalancer) which adds dnsmasq locally and resolves all `.test` domains. It is fully automated and needs no manual setup.
 
-## Getting started
+## Development
 
-You must have Docker and docker-compose installed on your system.
+To start development you just need to clone the project and run the following command:
 
-To work on the project follow these steps. (Check out the requirements Software LB section)
+```sh
+cmd/dev.sh
+```
 
-1. Clone the project
-2. Copy `.env.sample` to `.env` and configure it to reflect your settings
-3. Go to the config folder
-   1. In `php.env` update `VIRTUAL_HOST` to match your desired hostname
-   2. You can leave the rest as it is
-4. Launch `sh bin/dev.sh up` so docker-compose can run all the containers and start the project
+The command above accepts the same parameters that you'd give `docker-compose` such as `-d` to daemonize the process, container names to start up just a set of containers and so on.
 
-At this point, as it is the first time the project is being launched, all the Docker images will be built. It may take some time.
+There also exist other useful commands such as:
 
-The Docker images that will be built are the following:
+- `cmd/compose.sh` same as docker-compsoe but uses the yml files necessary
+- `cmd/clean.sh` same as above but brings down the project and cleans volumes
 
-- phplibs: extends the default php image and adds all the necessary extensions for Magento
-- php: extends `phplibs` and pulls Magento from `composer`. It will be initialized in `/init`
-- MySQL: simply adds whatever is in `$ENVIRONMENT/sql-init` to the image in order to initialize it however you want.
-- varnish: adds the default configuration for Magento.
-- nginx: adds some default configuration files for Magento.
-- redis: which adds a configuration file although it's empty but it's there to make it easy to customize. It works out of the box nonetheless.
+> **Tip**: to launch commands inside the container such as bin/magento run the following `/cmd/magento.sh <args>`
 
-All the images above are configured also to have a health-check for docker. Thus running on your machine `docker ps -a` you'll see if the container is *healthy* or not.
+## Deploy
 
-### Containers
+Inserire la variabile **n2_env** per la CI in Gitlab copiando al suo interno tutte le variabili presenti nel tuo **.env** in locale.
 
-The containers that are run with docker-compose are more than the images. That's because there are different instances of the same Docker image in some cases. And Elasticsearch is added which doesn't need to be built.
+Per mettere un progetto online ti basterà inviare un commit.
+Una pipeline di CI partirà automaticamente.
 
-### AWS
+## Contributions
 
-If you're deploying to AWS, you should comment out all the services which can be replaced by AWS services
+> TODO:
 
-1. Redis can be replaced by **ElastiCache**
-2. Varnish can be replaced to some extent by **CloudFront**
-3. MySQL can be replaced by **RDS**
-4. PHP and Nginx remain (so you can add them to an **EC2** configured with **Docker-Machine**) although you shouldn't use other software load balancers.
-5. You can add **ALB/ELB** to the stack for Load Balancing.
-6. **Route53** instead if you want to handle DNS from AWS
+## Issues template
 
-### Docker-machine
+To report an issue use the following template
 
-TODO:
+- Issue doesn't exist neither open nor closed
 
-## /init
+Steps to reproduce:
 
-As for the nature of PHP, it needs to be coupled with a webserver. I prefer Nginx. The downside of this one is that the two need to share the code.
+1.
+2.
 
-There are different solutions for this (when it comes to docker):
-
-1. It is possible to copy the code on both images
-2. It is possible to copy the code in one image and on startup have it copy the code to a shared volume.
-
-It is **not** an elegant solution, having both PHP and Nginx on the same image managed by `Supervisord` and it should be avoided at all costs.
-
-I chose the second solution as I don't like replicating code because it can lead to problems due to unsynced code. So what happens is that during build time, the source code inside `src/magento` is copied to `/init` in the **php** image. On runtime, it is expected that **php** and **nginx** share a volume which is mounted to `/www`. Another instance of php which also has the volume, starts up using a different `entrypoint`. This entrypoint makes sure to copy the code to the volume and initializes Magento by launching the `setup:install` script with all the necessary arguments to initialize Magento and connect it to the other services.
-
-So the startup-script does the following:
-
-1. Copies the code from `/init` to `/www` (which is the shared volume with nginx)
-2. The copying happens only on Production or in development if `src/magento` is empty. That's because if it is not empty, it shouldn't overwrite the content of `src/magento` because it may contain user changes
-3. Generates composer autoload files (optimized)
-4. Launches `setup:install` so that you don't have to manually configure the database
-5. Configures **Redis** for *session management*, for *default caching* and for *full-page caching*.
-6. Tells Magento that **Varnish** is configured
-7. Sets `deploy:mode` to **developer** or **production** accordingly
-8. Exits
-
-At this point the containers `php` and `nginx` have both the fully functional code.
-
-## TODO
-
-[ ] Configure nginx
-
-[x] What happens if magento-setup is run twice
-
-[ ] Configure gitlab-ci and possibly other CI/CD tools
-
-[ ] Convert docker-compose to Kubernetes
-
-[ ] Work on making setup faster
-
-[ ] Finish Docker-Machine section
+- Operating system:
