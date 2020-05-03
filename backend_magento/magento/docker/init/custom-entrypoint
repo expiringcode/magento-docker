@@ -1,0 +1,13 @@
+#!/bin/sh
+set -ex
+
+if [ ! -z "$(ls -A /. | grep init)" ]; then
+
+  if [ "$(ls -A /init | wc -l)" -gt 0 ]; then
+    echo "Removing unused code"
+    rm -rf /init
+  fi
+
+fi
+
+docker-php-entrypoint "$@"

@@ -39,7 +39,7 @@ To start development you just need to clone the project and run the following co
 cmd/dev.sh
 ```
 
-The command above accepts the same parameters that you'd give `docker-compose` such as `-d` to daemonize the process, container names to start up just a set of containers and so on.
+The command above accepts the same parameters that you'd give `docker-compose up` such as `-d` to daemonize the process, container names to start up just a set of containers and so on.
 
 There also exist other useful commands such as:
 
@@ -61,13 +61,4 @@ Una pipeline di CI partirà automaticamente.
 
 ## Issues template
 
-To report an issue use the following template
-
-- Issue doesn't exist neither open nor closed
-
-Steps to reproduce:
-
-1.
-2.
-
-- Operating system:
+> TODO:

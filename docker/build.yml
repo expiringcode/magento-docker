@@ -1,0 +1,50 @@
+version: '3'
+services:
+  backend_magento_base:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/magento_base'
+    entrypoint: "echo 'Built!'"
+    build:
+      context: ..
+      dockerfile: ./backend_magento/magento/docker/php.dockerfile
+  backend_magento:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento'
+    depends_on:
+      - backend_magento_base
+    build:
+      context: ..
+      dockerfile: ./backend_magento/magento/docker/Dockerfile
+      args:
+        BASE: ${CI_REGISTRY}/${CI_PROJECT_PATH}/magento_base
+        MAGENTO_PUBLIC_KEY: ${MAGENTO_PUBLIC_KEY}
+        MAGENTO_PRIVATE_KEY: ${MAGENTO_PRIVATE_KEY}
+  backend_magento_setup:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento'
+    depends_on:
+      - backend_magento
+  backend_magento_cron:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento'
+    depends_on:
+      - backend_magento
+  backend_magento_nginx:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento_nginx'
+    build:
+      context: ..
+      dockerfile: ./backend_magento/nginx/docker/Dockerfile
+  storage_elasticsearch:
+    image: >-
+      ${CI_REGISTRY}/${CI_PROJECT_PATH}/storage_elasticsearch
+    build:
+      context: ..
+      dockerfile: ./storage_elasticsearch/docker/Dockerfile
+      args:
+        ELK_VERSION: $ELK_VERSION
+  storage_mysql:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/storage_mysql'
+    build:
+      context: ..
+      dockerfile: ./storage_mysql/docker/Dockerfile
+  varnish:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/varnish'
+    build:
+      context: ..
+      dockerfile: ./varnish/docker/Dockerfile

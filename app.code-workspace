@@ -243,10 +243,6 @@
           "$include mq"
         ]
       ]
-    },
-    "git.ignoreLimitWarning": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
     }
   },
   "extensions": {

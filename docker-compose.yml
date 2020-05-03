@@ -1,0 +1,168 @@
+version: '3'
+networks:
+  mage: null
+  front-tier:
+    external:
+      name: front-tier
+volumes:
+  backend_magento: null
+  backend_magento_media: null
+  storage_elasticsearch: null
+  storage_mysql: null
+services:
+  backend_magento:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento'
+    restart: unless-stopped
+    volumes:
+      - 'backend_magento_media:/www/app/storage/app/public'
+      - 'backend_magento:/www'
+    environment:
+      REDIS_HOST: storage_redis
+      MYSQL_HOST: storage_mysql
+      MYSQL_DATABASE: ${BACKEND_MAGENTO_MYSQL_DATABASE}
+      MYSQL_USER: ${BACKEND_MAGENTO_MYSQL_USER}
+      MYSQL_PASSWORD: ${BACKEND_MAGENTO_MYSQL_PASSWORD}
+      BACKEND_FRONTNAME: ${MAGENTO_BACKEND_FRONTNAME}
+      ADMIN_FIRSTNAME: ${MAGENTO_ADMIN_FIRSTNAME}
+      ADMIN_LASTNAME: ${MAGENTO_ADMIN_LASTNAME}
+      ADMIN_EMAIL: ${MAGENTO_ADMIN_EMAIL}
+      ADMIN_USERNAME: ${MAGENTO_ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${MAGENTO_ADMIN_PASSWORD}
+      LANGUAGE: ${MAGENTO_LANGUAGE}
+      CURRENCY: ${MAGENTO_CURRENCY}
+      TIMEZONE: ${MAGENTO_TIMEZONE}
+      REWRITES_ENABLED: 1
+      MAGENTO_MODE: production
+      ELASTICSEARCH_HOST: storage_elasticsearch
+      VARNISH_HOST: varnish
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_PROTO: http
+      WAIT_FOR: storage_mysql:3306
+    networks:
+      - mage
+  backend_magento_setup:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento'
+    restart: unless-stopped
+    depends_on:
+      - backend_magento
+    entrypoint: ["setup"]
+    volumes:
+      - 'backend_magento_media:/www/app/storage/app/public'
+      - 'backend_magento:/www'
+    environment:
+      REDIS_HOST: storage_redis
+      MYSQL_HOST: storage_mysql
+      MYSQL_DATABASE: ${BACKEND_MAGENTO_MYSQL_DATABASE}
+      MYSQL_USER: ${BACKEND_MAGENTO_MYSQL_USER}
+      MYSQL_PASSWORD: ${BACKEND_MAGENTO_MYSQL_PASSWORD}
+      BACKEND_FRONTNAME: ${MAGENTO_BACKEND_FRONTNAME}
+      ADMIN_FIRSTNAME: ${MAGENTO_ADMIN_FIRSTNAME}
+      ADMIN_LASTNAME: ${MAGENTO_ADMIN_LASTNAME}
+      ADMIN_EMAIL: ${MAGENTO_ADMIN_EMAIL}
+      ADMIN_USERNAME: ${MAGENTO_ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${MAGENTO_ADMIN_PASSWORD}
+      LANGUAGE: ${MAGENTO_LANGUAGE}
+      CURRENCY: ${MAGENTO_CURRENCY}
+      TIMEZONE: ${MAGENTO_TIMEZONE}
+      REWRITES_ENABLED: 1
+      MAGENTO_MODE: production
+      ELASTICSEARCH_HOST: storage_elasticsearch
+      VARNISH_HOST: varnish
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_PROTO: http
+      WAIT_FOR: storage_mysql:3306
+    networks:
+      - mage
+  backend_magento_cron:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento'
+    restart: unless-stopped
+    depends_on:
+      - backend_magento
+    entrypoint: ["cron"]
+    command: ["crond", "-f"]
+    volumes:
+      - 'backend_magento_media:/www/app/storage/app/public'
+      - 'backend_magento:/www'
+    environment:
+      REDIS_HOST: storage_redis
+      MYSQL_HOST: storage_mysql
+      MYSQL_DATABASE: ${BACKEND_MAGENTO_MYSQL_DATABASE}
+      MYSQL_USER: ${BACKEND_MAGENTO_MYSQL_USER}
+      MYSQL_PASSWORD: ${BACKEND_MAGENTO_MYSQL_PASSWORD}
+      BACKEND_FRONTNAME: ${MAGENTO_BACKEND_FRONTNAME}
+      ADMIN_FIRSTNAME: ${MAGENTO_ADMIN_FIRSTNAME}
+      ADMIN_LASTNAME: ${MAGENTO_ADMIN_LASTNAME}
+      ADMIN_EMAIL: ${MAGENTO_ADMIN_EMAIL}
+      ADMIN_USERNAME: ${MAGENTO_ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${MAGENTO_ADMIN_PASSWORD}
+      LANGUAGE: ${MAGENTO_LANGUAGE}
+      CURRENCY: ${MAGENTO_CURRENCY}
+      TIMEZONE: ${MAGENTO_TIMEZONE}
+      REWRITES_ENABLED: 1
+      MAGENTO_MODE: production
+      ELASTICSEARCH_HOST: storage_elasticsearch
+      VARNISH_HOST: varnish
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_PROTO: http
+      WAIT_FOR: storage_mysql:3306
+    networks:
+      - mage
+  backend_magento_nginx:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/backend_magento_nginx'
+    restart: unless-stopped
+    volumes:
+      - 'backend_magento_media:/www/app/storage/app/public'
+      - 'backend_magento:/www'
+    networks:
+      mage:
+        aliases:
+          - 'magento.${VIRTUAL_HOST}'
+      # front-tier: null
+    depends_on:
+      - backend_magento
+    environment:
+      VIRTUAL_HOST: 'magento.${VIRTUAL_HOST}'
+      LETSENCRYPT_HOST: 'magento.${VIRTUAL_HOST}'
+      LETSENCRYPT_EMAIL: '${LETSENCRYPT_EMAIL}'
+      WAIT_FOR: 'backend_magento:9000'
+  storage_elasticsearch:
+    image: >-
+      ${CI_REGISTRY}/${CI_PROJECT_PATH}/storage_elasticsearch
+    restart: always
+    environment:
+      ES_JAVA_OPTS: '${ES_JAVA_OPTS}'
+    volumes:
+      - 'storage_elasticsearch:/usr/share/elasticsearch/data'
+    networks:
+      - mage
+  storage_mysql:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/storage_mysql'
+    environment:
+      MYSQL_HOST: storage_mysql
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      BACKEND_MAGENTO_MYSQL_DATABASE: '${BACKEND_MAGENTO_MYSQL_DATABASE}'
+      BACKEND_MAGENTO_MYSQL_USER: '${BACKEND_MAGENTO_MYSQL_USER}'
+      BACKEND_MAGENTO_MYSQL_PASSWORD: '${BACKEND_MAGENTO_MYSQL_PASSWORD}'
+    volumes:
+      - 'storage_mysql:/var/lib/mysql:rw'
+    networks:
+      - mage
+    restart: on-failure
+  storage_redis:
+    image: redis
+    restart: unless-stopped
+    networks:
+      - mage
+  varnish:
+    image: '${CI_REGISTRY}/${CI_PROJECT_PATH}/varnish'
+    restart: always
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_PROTO: http
+      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    networks:
+      - front-tier
+      - mage
