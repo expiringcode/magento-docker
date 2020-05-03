@@ -33,10 +33,13 @@ I'm using [blimpair/loadbalancer](https://github.com/blimpair/loadbalancer) whic
 
 ## Development
 
+First thing to do is to copy `.env.exmple` into `.env` and fill in your settings. I wouldn't change elasticsearch settings but the rest is ok to change. Afterwards you're good to go with the next step.
+
 To start development you just need to clone the project and run the following command:
 
 ```sh
 cmd/dev.sh
+# You can add --build to the above to build the images which will be done automatically if you have never built them before
 ```
 
 The command above accepts the same parameters that you'd give `docker-compose up` such as `-d` to daemonize the process, container names to start up just a set of containers and so on.
@@ -50,15 +53,21 @@ There also exist other useful commands such as:
 
 ## Deploy
 
-Inserire la variabile **n2_env** per la CI in Gitlab copiando al suo interno tutte le variabili presenti nel tuo **.env** in locale.
-
-Per mettere un progetto online ti basterà inviare un commit.
-Una pipeline di CI partirà automaticamente.
+To deploy the project, you can simply use `docker-compose.yml` as a reference to either create kubernetes configuration files or to use with docker-machine.
 
 ## Contributions
 
-> TODO:
+> Feel free to create pull requests
 
 ## Issues template
 
-> TODO:
+To report an issue use the following template
+
+- Issue doesn't exist neither open nor closed
+
+Steps to reproduce:
+
+1.
+2.
+
+- Operating system:
