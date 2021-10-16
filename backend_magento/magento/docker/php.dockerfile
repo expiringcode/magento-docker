@@ -1,10 +1,10 @@
-FROM php:7.2-fpm-alpine as composer
+FROM php:7.4.23-fpm-alpine as composer
 
 RUN set -xe && curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/local/bin/composer \
   && chmod +x /usr/local/bin/composer
 
-FROM php:7.2-fpm-alpine
+FROM php:7.4.23-fpm-alpine
 
 ## HEALTHCHECK
 RUN apk add --update --no-cache \
